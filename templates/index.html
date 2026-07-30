@@ -2,37 +2,30 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Student Opportunity Hub</title>
 
-    <link rel="stylesheet" href="/static/style.css">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 
 <body>
 
+<section class="hero">
 
-<div class="hero">
-
-    <h1>
-        Student Opportunity Hub
-    </h1>
+    <h1>Student Opportunity Hub</h1>
 
     <p>
-        Find internships, jobs, and career opportunities in one place.
+        Discover internships, jobs, and career opportunities in one place.
     </p>
-
 
     <form action="/search" method="get">
 
         <input
             type="text"
             name="query"
-            placeholder="Search for Python developer, internships..."
+            placeholder="Search Python developer, internships..."
             required
         >
 
@@ -42,22 +35,26 @@
 
     </form>
 
-</div>
+    <a
+        href="{{ url_for('saved_jobs') }}"
+        target="_blank"
+        class="apply-btn"
+        style="margin-top:20px;display:inline-block;"
+    >
+        Saved Opportunities
+    </a>
 
+</section>
 
-
-<div class="container">
-
+<section class="container">
 
 {% if error %}
 
-    <p class="error">
-        {{ error }}
-    </p>
+<div class="message">
+    {{ error }}
+</div>
 
 {% endif %}
-
-
 
 {% if jobs %}
 
@@ -65,68 +62,100 @@
     Results for "{{ query }}"
 </h2>
 
+<div class="jobs-grid">
 
 {% for job in jobs %}
 
-
 <div class="job-card">
 
+    {% if job.logo %}
+
+    <img
+        src="{{ job.logo }}"
+        alt="Company logo"
+        class="company-logo"
+    >
+
+    {% endif %}
 
     <h3>
         {{ job.title }}
     </h3>
 
-
-    <p>
-        <strong>Company:</strong>
+    <p class="company">
         {{ job.company }}
     </p>
 
-
     <p>
-        <strong>Location:</strong>
-        {{ job.location }}
+        <strong>Location:</strong> {{ job.location }}
     </p>
 
+    <p class="description">
 
-    {% if job.remote %}
+        {{ job.description[:250] }}
 
-    <p>
-        <strong>Remote:</strong> Yes
+        ...
+
     </p>
+
+    <a
+        href="{{ job.apply_link }}"
+        target="_blank"
+        class="apply-btn"
+    >
+        Apply
+    </a>
+
+    <a
+        href="/details/{{ loop.index0 }}?query={{ query }}"
+        target="_blank"
+        class="apply-btn"
+        style="background:#444;margin-left:10px;"
+    >
+        Details
+    </a>
+
+    {% if job.apply_link in saved_links %}
+
+    <button
+        class="apply-btn"
+        style="background:#6c757d;margin-left:10px;cursor:default;"
+        disabled
+    >
+        Saved
+    </button>
+
+    {% else %}
+
+    <a
+        href="{{ url_for('save_job', index=loop.index0, query=query) }}"
+        class="apply-btn"
+        style="background:#28a745;margin-left:10px;"
+    >
+        Save
+    </a>
 
     {% endif %}
 
-
-
-    <p>
-        {{ job.description[:250] }}...
-    </p>
-
-
-    <a href="{{ job.apply_link }}" target="_blank">
-        Apply Now
-    </a>
-
-
 </div>
-
 
 {% endfor %}
 
+</div>
 
 {% elif query %}
 
-<p>
-    No opportunities found for "{{ query }}".
-</p>
+<div class="message">
 
-
-{% endif %}
-
+No opportunities found for "{{ query }}"
 
 </div>
 
+{% endif %}
+
+</section>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
 

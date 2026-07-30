@@ -1,15 +1,14 @@
 import os
 import requests
 
-
 API_URL = "https://jsearch.p.rapidapi.com/search-v2"
 
 
 def search_jobs(query):
     headers = {
-        "x-rapidapi-key": os.getenv("JSEARCH_API_KEY"),
+        "Content-Type": "application/json",
         "x-rapidapi-host": "jsearch.p.rapidapi.com",
-        "Content-Type": "application/json"
+        "x-rapidapi-key": os.getenv("JSEARCH_API_KEY")
     }
 
     params = {
@@ -31,36 +30,35 @@ def search_jobs(query):
 
         data = response.json()
 
-        jobs_data = data.get("data", {}).get("jobs", [])
+        jobs = data.get("data", {}).get("jobs", [])
 
-        jobs = []
+        formatted_jobs = []
 
-        for job in jobs_data:
-            jobs.append({
-                "title": job.get("job_title", "No title available"),
-                "company": job.get("employer_name", "Company not specified"),
-                "location": job.get("job_location", "Location not specified"),
-                "description": job.get(
-                    "job_description",
-                    "No description available"
-                ),
-                "apply_link": job.get("job_apply_link", "#"),
-                "remote": job.get("job_is_remote", False)
-            })
+        for job in jobs:
+            formatted_jobs.append(
+                {
+                    "title": job.get("job_title", "No title"),
+                    "company": job.get("employer_name", "Unknown"),
+                    "location": job.get("job_location", "Not specified"),
+                    "description": job.get(
+                        "job_description",
+                        "No description available."
+                    ),
+                    "apply_link": job.get("job_apply_link", "#"),
+                    "logo": job.get("employer_logo", "")
+                }
+            )
 
-        return jobs
+        return formatted_jobs, None
 
     except requests.exceptions.Timeout:
-        return {
-            "error": "The job search service took too long to respond."
-        }
+        return [], "The Job Search API took too long to respond."
 
-    except requests.exceptions.RequestException as e:
-        return {
-            "error": str(e)
-        }
+    except requests.exceptions.ConnectionError:
+        return [], "Unable to connect to the Job Search API."
 
-    except ValueError:
-        return {
-            "error": "Invalid response received from the API."
-        }
+    except requests.exceptions.HTTPError:
+        return [], "The Job Search API returned an error."
+
+    except requests.exceptions.RequestException:
+        return [], "An unexpected API error occurred."
