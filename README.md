@@ -1,10 +1,10 @@
-\# Student Opportunity Hub
+Title: Student Opportunity Hub
 
 
+Demo Video: https://www.loom.com/share/5cd582a3c82f404aa62b9dc44029e7fd
 
-\# Live Deployment
 
-
+ Live Deployment
 
 Load Balancer: http://32.192.79.10
 
@@ -16,9 +16,7 @@ Web01: http://54.227.137.95
 
 Web02: http://13.221.90.222
 
-
-
-\# Demo Video: https://www.loom.com/share/5cd582a3c82f404aa62b9dc44029e7fd 
+ 
 
 
 
