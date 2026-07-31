@@ -95,13 +95,20 @@ def save_job(index):
 
     job = jobs[index]
 
+    job_to_save = {
+        "title": job["title"],
+        "company": job["company"],
+        "location": job["location"],
+        "apply_link": job["apply_link"]
+    }
+
     already_saved = any(
-        saved_job["apply_link"] == job["apply_link"]
+        saved_job["apply_link"] == job_to_save["apply_link"]
         for saved_job in saved
     )
 
     if not already_saved:
-        saved.append(job)
+        saved.append(job_to_save)
 
     session["saved_jobs"] = saved
 
