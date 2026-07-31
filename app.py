@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, abort, session, redirect, url_for
 from dotenv import load_dotenv
+import socket
 
 from services.jsearch import search_jobs
 
@@ -8,6 +9,12 @@ load_dotenv()
 app = Flask(__name__)
 
 app.secret_key = "student-opportunity-hub-secret-key"
+
+
+@app.after_request
+def add_server_header(response):
+    response.headers["X-Served-By"] = socket.gethostname()
+    return response
 
 
 @app.route("/")
